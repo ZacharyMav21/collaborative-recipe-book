@@ -1,20 +1,32 @@
-<!-- frontend/recipes/templates/recipes/recipe_list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recipe List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <h1>Recipe List</h1>
-    <ul>
-        {% for recipe in recipes %}
-            <li>
-                <strong>{{ recipe.title }}</strong> - {{ recipe.category }}
-                <p>{{ recipe.description }}</p>
-            </li>
-        {% endfor %}
-    </ul>
+
+    {% if recipes %}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <h2>{{ recipe.name }}</h2>
+                    <p>{{ recipe.description }}</p>
+                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                    <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+                    <p><strong>Cook time:</strong> {{ recipe.cook_time }} minutes</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recipes available.</p>
+    {% endif %}
+
 </body>
 </html>
+
+
