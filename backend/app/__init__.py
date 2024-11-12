@@ -2,16 +2,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import os
 
-# Initialize extensions
+# Initialize db and migrate
 db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
-
-    # Configuration for the database
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -19,6 +16,10 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Register Blueprints here (we'll add this later)
+    # Import routes here to avoid circular import issues
+    from .routes import recipe_bp
+    app.register_blueprint(recipe_bp)
 
     return app
+
+
