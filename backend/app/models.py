@@ -1,4 +1,4 @@
-# app/models.py
+from django.db import models
 from . import db
 from sqlalchemy.orm import relationship
 recipe_ingredients = db.Table(
@@ -28,11 +28,11 @@ class Recipe(db.Model):
     __tablename__ = 'recipes'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)  # Add this line
+    description = db.Column(db.Text, nullable=True)
     instructions = db.Column(db.Text, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+    is_favorite = models.BooleanField(default=False)
     # Relationships
     author = relationship("User", back_populates="recipes")
     category = relationship("Category", back_populates="recipes")

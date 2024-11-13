@@ -1,14 +1,25 @@
-<!-- frontend/recipes/templates/home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Collaborative Recipe Book</title>
+    <title>Recipe App Home</title>
 </head>
 <body>
-    <h1>Welcome to the Collaborative Recipe Book!</h1>
-    <p>This is a platform where users can share and discover recipes.</p>
-    <a href="{% url 'recipe_list' %}">View Recipes</a> <!-- Link to recipe list page -->
+    <h1>Welcome to the Recipe App</h1>
+    <p>This is the home page! where you can find the links to create a recipe, view all recipes, or view your favorited recipes!</p>
+    <nav>
+        <ul>
+            <!-- Link to the Recipe List -->
+            <li><a href="{% url 'recipe_list' %}">View All Recipes</a></li>
+
+            <!-- Link to the Create Recipe Page -->
+            <li><a href="{% url 'create_recipe' %}">Create New Recipe</a></li>
+
+            <!-- Link to the Favorites Page -->
+            <li><a href="{% url 'favorites' %}">View Favorite Recipes</a></li>
+        </ul>
+    </nav>
 </body>
 </html>
+

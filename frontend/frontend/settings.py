@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import os
 
 # frontend/settings.py
 FLASK_API_BASE_URL = 'http://127.0.0.1:5000'
@@ -58,8 +59,9 @@ ROOT_URLCONF = 'frontend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS':  [
-            BASE_DIR / 'templates',  # Ensure this is set to the correct directory
+        'DIRS': [
+            os.path.join(BASE_DIR, 'frontend', 'templates'),
+            BASE_DIR / 'templates'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
