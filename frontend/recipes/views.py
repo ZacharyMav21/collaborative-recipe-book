@@ -47,14 +47,14 @@ def create_recipe(request):
                 quantity=quantity
             )
 
-        return redirect('recipe_list')  # Redirect to a list or detail page
+          # Redirect to a list or detail page
 
     return render(request, 'recipes/create_recipe.html')
 # Edit Recipe
 def edit_recipe(request, id):
     recipe = get_object_or_404(Recipe, id=id)
-    if request.method == 'PATCH':
-        form = RecipeForm(request.PATCH, instance=recipe)
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, instance=recipe)
         if form.is_valid():
             form.save()
             return redirect('recipe_detail', id=id)
