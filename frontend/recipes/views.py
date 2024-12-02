@@ -19,37 +19,33 @@ def recipe_list(request):
     return render(request, 'recipes/recipe_list.html', {'recipes': recipes})
 def home(request):
     return render(request, 'home.html')
+import requests
+from django.shortcuts import render, redirect
+
 def create_recipe(request):
-    if request.method == "POST":
-        title = request.POST['title']
-        description = request.POST['description']
-        category = request.POST['category']
-        instructions = request.POST['instructions']
-        favorite = 'favorite' in request.POST
+    if request.method == 'POST':
+        print(request.POST)  # Debug: Log the POST data
 
-        # Create the Recipe instance
-        recipe = Recipe.objects.create(
-            title=title,
-            description=description,
-            category=category,
-            instructions=instructions,
-            favorite=favorite
-        )
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        instructions = request.POST.get('instructions')
+        ingredients = request.POST.getlist('ingredients[]')  # Assuming array input
 
-        # Handle ingredients
-        ingredient_names = request.POST.getlist('ingredient_name[]')
-        ingredient_quantities = request.POST.getlist('ingredient_quantity[]')
+        payload = {
+            'title': title,
+            'description': description,
+            'instructions': instructions,
+            'ingredients': [{'name': i.split(':')[0], 'quantity': i.split(':')[1]} for i in ingredients]
+        }
 
-        for name, quantity in zip(ingredient_names, ingredient_quantities):
-            Ingredient.objects.create(
-                recipe=recipe,
-                name=name,
-                quantity=quantity
-            )
-
-          # Redirect to a list or detail page
+        response = requests.post('http://127.0.0.1:5000/recipes', json=payload)
+        if response.status_code == 201:
+            return redirect('recipe_list')  # Redirect to recipe list on success
+        else:
+            return render(request, 'recipes/create_recipe.html', {'error': response.json()})
 
     return render(request, 'recipes/create_recipe.html')
+
 # Edit Recipe
 def edit_recipe(request, id):
     recipe = get_object_or_404(Recipe, id=id)
