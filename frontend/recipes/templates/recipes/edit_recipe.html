@@ -1,10 +1,33 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>Edit Recipe: {{ recipe.title }}</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Changes</button>
-</form>
-<a href="{% url 'recipe_detail' recipe.id %}">Back to Recipe Details</a>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Recipe</title>
+</head>
+<body>
+    <h1>Edit Recipe</h1>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" value="{{ recipe.title }}"><br><br>
+
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description">{{ recipe.description }}</textarea><br><br>
+
+        <label for="instructions">Instructions:</label><br>
+        <textarea id="instructions" name="instructions">{{ recipe.instructions }}</textarea><br><br>
+
+        <label for="ingredients">Ingredients (name:quantity, separated by commas):</label><br>
+        <input type="text" id="ingredients" name="ingredients[]" value="{% for ing in recipe.ingredients %}{{ ing.name }}:{{ ing.quantity }}{% if not forloop.last %}, {% endif %}{% endfor %}"><br><br>
+
+        <button type="submit">Save Changes</button>
+        <a href="{% url 'recipe_list' %}">Cancel</a>
+    </form>
+</body>
+</html>

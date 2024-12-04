@@ -48,16 +48,36 @@ def create_recipe(request):
 
 # Edit Recipe
 def edit_recipe(request, id):
-    recipe = get_object_or_404(Recipe, id=id)
-    if request.method == 'POST':
-        form = RecipeForm(request.POST, instance=recipe)
-        if form.is_valid():
-            form.save()
-            return redirect('recipe_detail', id=id)
-    else:
-        form = RecipeForm(instance=recipe)
-    return render(request, 'recipes/edit_recipe.html', {'form': form, 'recipe': recipe})
+    # Fetch the recipe details from the Flask API
+    try:
+        response = requests.get(f"{settings.FLASK_API_BASE_URL}/recipes/{id}")
+        response.raise_for_status()
+        recipe_data = response.json()
+    except requests.exceptions.RequestException as e:
+        return render(request, 'recipes/error.html', {'error': str(e)})
 
+    if request.method == 'POST':
+        # Handle form submission
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        instructions = request.POST.get('instructions')
+        ingredients = request.POST.getlist('ingredients[]')
+
+        payload = {
+            'title': title,
+            'description': description,
+            'instructions': instructions,
+            'ingredients': [{'name': i.split(':')[0], 'quantity': i.split(':')[1]} for i in ingredients],
+        }
+
+        try:
+            put_response = requests.put(f"{settings.FLASK_API_BASE_URL}/recipes/{id}", json=payload)
+            put_response.raise_for_status()
+            return redirect('recipe_list')  # Redirect to the recipe list on success
+        except requests.exceptions.RequestException as e:
+            return render(request, 'recipes/edit_recipe.html', {'error': str(e), 'recipe': recipe_data})
+
+    return render(request, 'recipes/edit_recipe.html', {'recipe': recipe_data})
 # Recipe Details
 def recipe_detail(request, id):
     recipe = get_object_or_404(Recipe, id=id)
@@ -77,3 +97,13 @@ def favorites_page(request):
         favorite_recipes = []
 
     return render(request, 'recipes/favorites.html', {'recipes': favorite_recipes})
+
+def delete_recipe(request, id):
+    try:
+        # Send DELETE request to the Flask API
+        response = requests.delete(f"{settings.FLASK_API_BASE_URL}/recipes/{id}")
+        response.raise_for_status()  # Raise an error if the request failed
+        return redirect('recipe_list')  # Redirect to the recipe list after successful deletion
+    except requests.exceptions.RequestException as e:
+        # Handle errors, such as network issues or API errors
+        return render(request, 'recipes/error.html', {'error': str(e)})
